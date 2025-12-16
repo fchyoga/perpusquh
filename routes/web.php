@@ -53,6 +53,8 @@ Route::get('/dashboard/loan-management/download', [App\Http\Controllers\LoanCont
 Route::get('/dashboard/loan-management/{loan_id}', [App\Http\Controllers\LoanController::class, 'edit'])->name('loan-management.edit')->middleware(['role:admin']);
 Route::put('/dashboard/loan-management/update/{loan_id}', [App\Http\Controllers\LoanController::class, 'update'])->name('loan-management.update')->middleware(['role:admin']);
 Route::get('/dashboard/loan-management/approve/{loan_id}', [App\Http\Controllers\LoanController::class, 'approve'])->name('loan-approve')->middleware(['role:admin']);
+Route::get('/dashboard/loan-management/accept/{loan_id}', [App\Http\Controllers\LoanController::class, 'accept'])->name('loan-accept')->middleware(['role:admin']);
+Route::get('/dashboard/loan-management/reject/{loan_id}', [App\Http\Controllers\LoanController::class, 'reject'])->name('loan-reject')->middleware(['role:admin']);
 
 // profile
 Route::get('/dashboard/profile', [App\Http\Controllers\ProfileController::class, 'admin'])->name('profile-admin')->middleware(['role:admin|karyawan']);
@@ -62,9 +64,18 @@ Route::put('/dashboard/profile/update/{user_id}', [App\Http\Controllers\ProfileC
 // Member Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/member/dashboard', [App\Http\Controllers\MemberAreaController::class, 'dashboard'])->name('member.dashboard');
-    Route::get('/member/loan/request/{book_id}', [App\Http\Controllers\MemberAreaController::class, 'requestLoan'])->name('member.loan.request');
+    Route::get('/member/loan/request/{book_id}', [App\Http\Controllers\MemberAreaController::class, 'requestLoan']);
+    Route::post('/member/loan/store', [App\Http\Controllers\MemberAreaController::class, 'storeLoan'])->name('member.loan.store');
     Route::get('/member/history', [App\Http\Controllers\MemberAreaController::class, 'history'])->name('member.history');
     Route::get('/member/profile', [App\Http\Controllers\MemberAreaController::class, 'profile'])->name('member.profile');
     Route::post('/member/profile/update', [App\Http\Controllers\MemberAreaController::class, 'updateProfile'])->name('member.profile.update');
     Route::get('/member/read/{book_id}', [App\Http\Controllers\MemberAreaController::class, 'readBook'])->name('member.read');
+    Route::get('/member/read/{book_id}', [App\Http\Controllers\MemberAreaController::class, 'readBook'])->name('member.read');
+});
+
+// Master Data Routes
+Route::prefix('dashboard/master')->middleware(['role:admin'])->group(function () {
+    Route::resource('prodi', App\Http\Controllers\ProdiController::class, ['as' => 'admin.master']);
+    Route::resource('jurusan', App\Http\Controllers\JurusanController::class, ['as' => 'admin.master']);
+    Route::resource('semester', App\Http\Controllers\SemesterController::class, ['as' => 'admin.master']);
 });

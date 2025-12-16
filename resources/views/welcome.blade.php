@@ -36,7 +36,7 @@
     <div class="container py-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold m-0">Paling Sering Dipinjam</h3>
-            <a href="#" class="text-decoration-none fw-bold small">Lihat Semua <i class="bi bi-arrow-right"></i></a>
+            <a href="/search" class="text-decoration-none fw-bold small">Lihat Semua <i class="bi bi-arrow-right"></i></a>
         </div>
 
         <div class="row mb-5">
@@ -63,7 +63,7 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold m-0">Koleksi Terbaru</h3>
-            <a href="#" class="text-decoration-none fw-bold small">Lihat Semua <i class="bi bi-arrow-right"></i></a>
+            <a href="/search" class="text-decoration-none fw-bold small">Lihat Semua <i class="bi bi-arrow-right"></i></a>
         </div>
 
         <div class="row">

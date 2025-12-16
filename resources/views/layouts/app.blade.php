@@ -56,25 +56,12 @@
                 </div>
             </a>
 
-            <ul class="nav nav-pills justify-content-center align-items-center">
-                <!-- <input pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus> -->
-                <!-- <div class="input-group"> -->
-                <!-- <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password"> -->
-                <!-- <span id="eyePw" class="bi bi-eye-slash input-group-text" id="togglePassword" onclick="showPassword()"></span> -->
-                <!-- </div> -->
-                <li class="nav-item me-3">
-                    <a href="/search" class="nav-link link-dark px-2 active" aria-current="page">Daftar Buku</a>
+            <ul class="nav nav-pills justify-content-center align-items-center gap-2">
+                <li class="nav-item">
+                    <a href="/search" class="btn btn-secondary-new">Daftar Buku</a>
                 </li>
                 <li class="nav-item">
-                    {{-- <form action="{{ route('login.custom') }}" method="post"> --}}
-                        {{-- @csrf --}}
-                        {{-- <input required placeholder="masukan email" type="text" name="email" id=""> --}}
-                        {{-- <input required placeholder="masukan password" type="password" name="password" id=""> --}}
-                        <a href="/login">
-                            <button name="login" id="login" type="submit" class="btn btn-primary mb-1">Login</button>
-                        </a>
-                        {{--
-                    </form> --}}
+                    <a href="/login" class="btn btn-primary-new">Login</a>
                 </li>
             </ul>
         </header>

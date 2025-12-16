@@ -28,7 +28,18 @@ class MemberAreaController extends Controller
 
     public function requestLoan($book_id)
     {
-        $book = Book::find($book_id);
+        // ... (this method can be kept as fallback or removed if fully replaced by modal, keeping for now)
+    }
+
+    public function storeLoan(Request $request)
+    {
+        $request->validate([
+            'book_id' => 'required|exists:books,id',
+            'loan_date' => 'required|date',
+            'return_date' => 'required|date|after_or_equal:loan_date',
+        ]);
+
+        $book = Book::find($request->book_id);
 
         if ($book->stock < 1) {
             return redirect()->back()->with('error', 'Stok buku habis');
@@ -39,7 +50,8 @@ class MemberAreaController extends Controller
             'user_id' => Auth::id(),
             'status' => 'Menunggu Persetujuan',
             'note' => 'Peminjaman via Website',
-            'return_date' => date('Y-m-d', strtotime('+7 days')), // Default 7 days
+            'loan_date' => $request->loan_date,
+            'return_date' => $request->return_date,
             'returned_date' => null,
             'penalty_price' => 0
         ]);
@@ -52,11 +64,7 @@ class MemberAreaController extends Controller
             'quantity' => 1
         ]);
 
-        // Decrease stock? Maybe wait for approval? 
-        // Requirement says "Sistem akan meneruskan ke admin". 
-        // Usually stock is reserved or decreased upon approval. 
-        // But to prevent overbooking, maybe decrease now? 
-        // Let's decrease now for simplicity, admin can reject and restore stock.
+        // Decrease stock
         $book->update(['stock' => $book->stock - 1]);
 
         return redirect('/member/history')->with('success', 'Permintaan peminjaman berhasil dikirim');

@@ -26,7 +26,10 @@ class MemberController extends Controller
 
     public function create()
     {
-        return view('admin.students.create');
+        $prodis = \App\Models\Prodi::all();
+        $jurusans = \App\Models\Jurusan::all();
+        $semesters = \App\Models\Semester::all();
+        return view('admin.students.create', compact('prodis', 'jurusans', 'semesters'));
     }
 
     public function store(Request $request)
@@ -56,8 +59,11 @@ class MemberController extends Controller
     {
         $student_id = $request->student_id;
         $student = User::where('id', '=', $student_id)->first();
+        $prodis = \App\Models\Prodi::all();
+        $jurusans = \App\Models\Jurusan::all();
+        $semesters = \App\Models\Semester::all();
 
-        return view('admin.students.edit', compact('student'));
+        return view('admin.students.edit', compact('student', 'prodis', 'jurusans', 'semesters'));
     }
 
     public function update(Request $request)

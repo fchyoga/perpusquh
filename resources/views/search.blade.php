@@ -5,15 +5,18 @@
 
     <div class="container pt-5">
         <div class="row">
-            <h2>Cari Buku Favorit Kamu</h2>
-            <form action="/search" method="GET">
-                <div class="input-group mb-3 mt-2">
-                    <input class="i-search" type="text" name="keyword" placeholder="Cari judul buku / penulis / penerbit"
-                        value="{{ request()->input('keyword') }}">
-                    <input type="submit" class="btn btn-outline-secondary" value="Cari"
-                        style="border: 1px solid #D0D0D0;height: 50px !important; width: 70px;" />
-                </div>
-            </form>
+            <div class="text-center mb-4">
+                <h2 class="fw-bold mb-3">Cari Buku Favorit Kamu</h2>
+                <form action="/search" method="GET" class="d-flex justify-content-center">
+                    <div class="search-box d-flex align-items-center w-100" style="max-width: 600px;">
+                        <i class="bi bi-search text-muted ms-3"></i>
+                        <input type="text" name="keyword" class="form-control search-input"
+                            placeholder="Cari judul buku, penulis, atau subjek..."
+                            value="{{ request()->input('keyword') }}">
+                        <button class="btn btn-primary-custom rounded-pill px-4 py-2 m-1" type="submit">Cari</button>
+                    </div>
+                </form>
+            </div>
             <div class="col-md-12 mt-4">
                 <div class="row">
                     @foreach ($books as $key => $book)

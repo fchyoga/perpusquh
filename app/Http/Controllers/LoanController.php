@@ -34,7 +34,7 @@ class LoanController extends Controller
                 }
 
                 if ($days < 0) {
-                    $loan['denda'] = "Rp. " . number_format(abs($days) * count($loan['loan_items']) * 20000, 0, ',', '.');
+                    $loan['denda'] = "Rp. " . number_format(abs($days) * count($loan['loan_items']) * $loan['penalty_per_day'], 0, ',', '.');
                 }
             } else {
                 $createdTimestamp = strtotime($loan['returned_date']);
@@ -86,7 +86,8 @@ class LoanController extends Controller
             'note' => $request->note,
             'return_date' => $request->return_date,
             'returned_date' => $request->return_date,
-            'penalty_price' => "0"
+            'penalty_price' => "0",
+            'penalty_per_day' => $request->penalty_per_day ?? 20000
         ]);
 
         for ($i = 0; $i < count($request->book_id); $i++) {
@@ -157,8 +158,31 @@ class LoanController extends Controller
                 }
             }
         }
-
         return view('admin.loans.list', compact('loans'));
+    }
+
+    public function accept($loan_id)
+    {
+        $loan = Loan::find($loan_id);
+        $loan->update(['status' => 'Sedang Dipinjam']);
+        return redirect()->back()->with('success', 'Peminjaman disetujui');
+    }
+
+    public function reject($loan_id)
+    {
+        $loan = Loan::find($loan_id);
+        $loan_items = LoanItem::where('loan_id', $loan_id)->get();
+
+        // Restore stock
+        foreach ($loan_items as $item) {
+            $book = Book::find($item->book_id);
+            if ($book) {
+                $book->update(['stock' => $book->stock + 1]);
+            }
+        }
+
+        $loan->update(['status' => 'Ditolak']);
+        return redirect()->back()->with('success', 'Peminjaman ditolak');
     }
 
     public function approve(Request $request)
@@ -180,16 +204,17 @@ class LoanController extends Controller
         $timeDifference = $createdTimestamp - $currentTimestamp;
 
         $days = floor($timeDifference / 86400);
+        $denda = 0;
 
         if ($days < 0) {
-            $loans[0]['denda'] = strval(abs($days) * count($loan_items) * 20000);
+            $denda = abs($days) * count($loan_items) * $loans[0]['penalty_per_day'];
         }
 
         $update = Loan::find($loan_id)->update([
             'status' => 'Telah Dikembalikan',
-            'updated_at' => $loans[0]['updated_at'],
-            'returned_date' => $loans[0]['updated_at'],
-            'penalty_price' => $loans[0]['denda']
+            'updated_at' => now(),
+            'returned_date' => now(),
+            'penalty_price' => $denda
         ]);
 
         // dd($update, $loans[0]['denda']);
@@ -230,7 +255,7 @@ class LoanController extends Controller
                 'id' => $data[$i]['id'],
                 'nama peminjam' => $data[$i]['user']['name'],
                 'buku yang dipinjam' => implode(', ', $ids),
-                'nisn' => $data[$i]['user']['nisn'],
+                'nim' => $data[$i]['user']['nim'],
                 'status' => $data[$i]['status'],
                 'jangka waktu' => $data[$i]['selisih'],
                 'tanggal pengembalian' => $data[$i]['return_date']

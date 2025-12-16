@@ -93,6 +93,39 @@
                         Manajemen Anggota
                     </a>
                 </li>
+                <li>
+                    <a href="#masterDataSubmenu" data-bs-toggle="collapse"
+                        class="nav-link-sidebar d-flex justify-content-between align-items-center {{ request()->is('dashboard/master*') ? '' : 'collapsed' }}"
+                        aria-expanded="{{ request()->is('dashboard/master*') ? 'true' : 'false' }}">
+                        <span><i class="bi bi-database"></i> Data Master</span>
+                        <i class="bi bi-chevron-down small"></i>
+                    </a>
+                    <div class="collapse {{ request()->is('dashboard/master*') ? 'show' : '' }}" id="masterDataSubmenu">
+                        <ul class="nav flex-column ms-3 mt-1">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.master.prodi.index') }}"
+                                    class="nav-link-sidebar py-1 {{ request()->is('dashboard/master/prodi*') ? 'active' : '' }}"
+                                    style="font-size: 0.9em;">
+                                    Prodi
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.master.jurusan.index') }}"
+                                    class="nav-link-sidebar py-1 {{ request()->is('dashboard/master/jurusan*') ? 'active' : '' }}"
+                                    style="font-size: 0.9em;">
+                                    Jurusan
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.master.semester.index') }}"
+                                    class="nav-link-sidebar py-1 {{ request()->is('dashboard/master/semester*') ? 'active' : '' }}"
+                                    style="font-size: 0.9em;">
+                                    Semester
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
             @endif
 
             @if (auth()->user()->role == 'member')

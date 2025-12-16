@@ -26,7 +26,7 @@
                     <thead>
                         <tr>
                             <th scope="col">Nama Lengkap</th>
-                            <th scope="col" class="text-center">NISN</th>
+                            <th scope="col" class="text-center">NIM</th>
                             <th scope="col">Status</th>
                             <th scope="col" class="text-center">Jangka Waktu</th>
                             <th scope="col" class="text-center">Denda</th>
@@ -38,7 +38,7 @@
                         @foreach ($loans as $loan)
                             <tr>
                                 <td class="align-middle">{{ $loan['user']['name'] }}</td>
-                                <td class="align-middle text-center">{{ $loan['user']['nisn'] }}</td>
+                                <td class="align-middle text-center">{{ $loan['user']['nim'] }}</td>
                                 @if($loan['status'] == 'Telah Dikembalikan')
                                     <td class="align-middle"><button disabled
                                             class="btn btn-outline-success">{{ $loan['status'] }}</button></td>

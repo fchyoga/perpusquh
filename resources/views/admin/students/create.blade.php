@@ -32,15 +32,30 @@
                             </div>
                             <div class="mb-3">
                                 <label for="prodi" class="form-label">Prodi</label>
-                                <input required type="text" name="prodi" class="form-control" id="prodi">
+                                <select required name="prodi" class="form-select" id="prodi">
+                                    <option value="" selected disabled>Pilih Prodi</option>
+                                    @foreach($prodis as $prodi)
+                                        <option value="{{ $prodi->nama_prodi }}">{{ $prodi->nama_prodi }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="jurusan" class="form-label">Jurusan</label>
-                                <input required type="text" name="jurusan" class="form-control" id="jurusan">
+                                <select required name="jurusan" class="form-select" id="jurusan">
+                                    <option value="" selected disabled>Pilih Jurusan</option>
+                                    @foreach($jurusans as $jurusan)
+                                        <option value="{{ $jurusan->nama_jurusan }}">{{ $jurusan->nama_jurusan }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="semester" class="form-label">Semester</label>
-                                <input required type="number" name="semester" class="form-control" id="semester">
+                                <select required name="semester" class="form-select" id="semester">
+                                    <option value="" selected disabled>Pilih Semester</option>
+                                    @foreach($semesters as $semester)
+                                        <option value="{{ $semester->nama_semester }}">{{ $semester->nama_semester }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>

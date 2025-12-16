@@ -12,9 +12,11 @@ class Loan extends Model
         'user_id',
         'status',
         'note',
+        'loan_date',
         'return_date',
         'returned_date',
-        'penalty_price'
+        'penalty_price',
+        'penalty_per_day'
     ];
 
     public function user()
