@@ -94,6 +94,13 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('settings.index') }}"
+                        class="nav-link-sidebar {{ request()->is('dashboard/settings*') ? 'active' : '' }}">
+                        <i class="bi bi-gear"></i>
+                        Pengaturan
+                    </a>
+                </li>
+                <li>
                     <a href="#masterDataSubmenu" data-bs-toggle="collapse"
                         class="nav-link-sidebar d-flex justify-content-between align-items-center {{ request()->is('dashboard/master*') ? '' : 'collapsed' }}"
                         aria-expanded="{{ request()->is('dashboard/master*') ? 'true' : 'false' }}">

@@ -19,10 +19,10 @@
                         <div class="mb-3">
                             <label for="name" class="form-label">Cari Nama Anggota</label>
                             <!-- <select class="form-select" aria-label="Default select example" name="student_id">
-                                    @foreach ($students as $student)
-                                        <option value="{{$student->id}}">{{$student->name}} ({{$student->nim}})</option>
-                                    @endforeach
-                                </select> -->
+                                        @foreach ($students as $student)
+                                            <option value="{{$student->id}}">{{$student->name}} ({{$student->nim}})</option>
+                                        @endforeach
+                                    </select> -->
                             <br>
                             <select name="student_id" class="form-select selectpicker" aria-label="Default select example"
                                 data-live-search="true">
@@ -39,7 +39,7 @@
                         <div class="mb-3">
                             <label for="penalty_per_day" class="form-label">Denda Per Hari (Rp)</label>
                             <input required type="number" name="penalty_per_day" class="form-control" id="penalty_per_day"
-                                value="20000">
+                                value="{{ $defaultPenalty }}">
                         </div>
                         <div class="mb-3">
                             <label for="class" class="form-label">Catatan</label>
@@ -51,10 +51,10 @@
                     <div class="mb-3">
                         <label for="nisn" class="form-label">Cari Nama Buku</label>
                         <!-- <select class="form-select" aria-label="Default select example" name="book_id">
-                            @foreach ($books as $book)
-                                <option value="{{$book->id}}">{{$book->title}}</option>
-                            @endforeach
-                        </select> -->
+                                @foreach ($books as $book)
+                                    <option value="{{$book->id}}">{{$book->title}}</option>
+                                @endforeach
+                            </select> -->
                         <br>
                         <select name="book_id[]" class="form-select selectpicker" multiple
                             aria-label="Default select example" data-live-search="true">

@@ -45,6 +45,9 @@
                 <div class="row g-4">
                     <!-- Left Column: Borrower Info -->
                     <div class="col-lg-4 border-end">
+                        <form action="/dashboard/loan-management/update/{{ $loans['id'] }}" method="POST">
+                        @csrf
+                        @method('PUT')
                         <h6 class="text-muted text-uppercase small fw-bold mb-3 ls-1">Data Peminjam</h6>
                         
                         <div class="mb-3">
@@ -65,31 +68,32 @@
 
                          <hr class="my-4 text-muted opacity-25">
 
-                        <h6 class="text-muted text-uppercase small fw-bold mb-3 ls-1">Waktu Peminjaman</h6>
+                        <h6 class="text-muted text-uppercase small fw-bold mb-3 ls-1">Edit Peminjaman</h6>
 
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <label class="form-label text-muted small mb-1">Tgl Pinjam</label>
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-calendar-event text-primary me-2"></i>
-                                    <span class="fw-medium">{{ date('d M Y', strtotime($loans['loan_date'] ?? $loans['created_at'])) }}</span>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                 <label class="form-label text-muted small mb-1">Tenggat Kembali</label>
-                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-calendar-check text-danger me-2"></i>
-                                    <span class="fw-medium">{{ date('d M Y', strtotime($loans['return_date'])) }}</span>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted small mb-1">Tanggal Pinjam</label>
+                            <input type="text" class="form-control bg-light" value="{{ date('d M Y', strtotime($loans['loan_date'] ?? $loans['created_at'])) }}" readonly>
                         </div>
 
-                        @if($loans['note'])
-                        <div class="alert alert-light border mt-4 mb-0">
-                            <label class="text-muted small fw-bold mb-1">Catatan:</label>
-                             <p class="mb-0 small text-dark">{{$loans['note']}}</p>
+                        <div class="mb-3">
+                             <label for="return_date" class="form-label text-muted small mb-1">Tenggat Kembali</label>
+                             <input type="date" name="return_date" id="return_date" class="form-control" value="{{$loans['return_date']}}" required>
                         </div>
-                        @endif
+
+                        <div class="mb-3">
+                             <label for="penalty_per_day" class="form-label text-muted small mb-1">Denda Per Hari (Rp)</label>
+                             <input type="number" name="penalty_per_day" id="penalty_per_day" class="form-control" value="{{$loans['penalty_per_day'] ?? 20000}}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="note" class="text-muted small mb-1">Catatan</label>
+                             <textarea name="note" id="note" class="form-control" rows="2">{{$loans['note']}}</textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-sm">Update Data</button>
+                        </div>
+                        </form>
 
                     </div>
 

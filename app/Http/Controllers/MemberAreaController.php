@@ -45,6 +45,9 @@ class MemberAreaController extends Controller
             return redirect()->back()->with('error', 'Stok buku habis');
         }
 
+        // Get default penalty from settings or fallback to 20000
+        $penaltyPerDay = \App\Models\Setting::where('key', 'penalty_per_day')->value('value') ?? 20000;
+
         // Create Loan with status 'requested'
         $loan = Loan::create([
             'user_id' => Auth::id(),
@@ -53,7 +56,8 @@ class MemberAreaController extends Controller
             'loan_date' => $request->loan_date,
             'return_date' => $request->return_date,
             'returned_date' => null,
-            'penalty_price' => 0
+            'penalty_price' => 0,
+            'penalty_per_day' => $penaltyPerDay
         ]);
 
         LoanItem::create([

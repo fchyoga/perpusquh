@@ -16,47 +16,34 @@ class LoanController extends Controller
         $loans = Loan::with('user', 'loan_items')->orderBy('updated_at', 'DESC')->paginate(8);
 
         foreach ($loans as $loan) {
-            $currentTimestamp = time();
-            $createdTimestamp = strtotime($loan['return_date']);
-            $timeDifference = $createdTimestamp - $currentTimestamp;
+            $returnDate = strtotime($loan['return_date']);
+            $loan['denda'] = 'Rp. 0';
 
-            if ($loan['status'] == 'Sedang Dipinjam') {
-                $days = floor($timeDifference / 86400);
-                $timeDifference = $days . " hari ";
-                if ($days < 0) {
-                    $timeDifference = "Telat " . $days . " hari ";
-                }
+            if ($loan['status'] == 'Telah Dikembalikan') {
+                $returnedDate = strtotime($loan['returned_date']);
+                $diffSecs = $returnedDate - $returnDate;
+                $days = floor($diffSecs / 86400);
 
-                $loan['selisih'] = $timeDifference;
-
-                if ($loan['status'] == 'Telah Dikembalikan') {
-                    $loan['selisih'] = '-';
-                }
-
-                if ($days < 0) {
-                    $loan['denda'] = "Rp. " . number_format(abs($days) * count($loan['loan_items']) * $loan['penalty_per_day'], 0, ',', '.');
+                if ($days > 0) {
+                    $loan['selisih'] = "Telat " . $days . " hari";
+                    $loan['denda'] = "Rp. " . number_format($loan['penalty_price'], 0, ',', '.');
+                } else {
+                    $loan['selisih'] = "Tepat Waktu";
                 }
             } else {
-                $createdTimestamp = strtotime($loan['returned_date']);
-                $timeDifference = $createdTimestamp - $currentTimestamp;
-                $days = floor($timeDifference / 86400);
-                $timeDifference = $days . " hari ";
+                // Not returned yet
+                $now = time();
+                $diffSecs = $returnDate - $now;
+                $days = floor($diffSecs / 86400);
+
                 if ($days < 0) {
-                    $timeDifference = "Telat " . $days . " hari ";
-                }
-
-                $loan['selisih'] = $timeDifference;
-
-                if ($days < 0 && $loan['penalty_price']) {
-                    $loan['denda'] = "Rp. " . $loan['penalty_price'];
+                    $lateDays = abs($days);
+                    $loan['selisih'] = "Telat " . $lateDays . " hari";
+                    $loan['denda'] = "Rp. " . number_format($lateDays * count($loan['loan_items']) * $loan['penalty_per_day'], 0, ',', '.');
                 } else {
-                    $loan['selisih'] = "";
+                    $loan['selisih'] = $days . " hari lagi";
                 }
             }
-
-            // if ($loan['selisih'] == '-') {
-            //     $loan['denda'] = 'Rp. 0';
-            // }
         }
 
         return view('admin.loans.list', compact('loans'));
@@ -74,8 +61,9 @@ class LoanController extends Controller
     {
         $students = User::where('role', 'member')->orderBy('name', 'ASC')->get();
         $books = Book::where('stock', '>', '0')->orderBy('title', 'ASC')->get();
+        $defaultPenalty = \App\Models\Setting::where('key', 'penalty_per_day')->value('value') ?? 20000;
 
-        return view('admin.loans.create', compact('students', 'books'));
+        return view('admin.loans.create', compact('students', 'books', 'defaultPenalty'));
     }
 
     public function store(Request $request)
@@ -87,7 +75,7 @@ class LoanController extends Controller
             'return_date' => $request->return_date,
             'returned_date' => $request->return_date,
             'penalty_price' => "0",
-            'penalty_per_day' => $request->penalty_per_day ?? 20000
+            'penalty_per_day' => $request->penalty_per_day ?? \App\Models\Setting::where('key', 'penalty_per_day')->value('value') ?? 20000
         ]);
 
         for ($i = 0; $i < count($request->book_id); $i++) {
@@ -120,11 +108,16 @@ class LoanController extends Controller
 
     public function update(Request $request)
     {
-        $student_id = $request->student_id;
-        $input = $request->all();
+        $loan_id = $request->loan_id;
+        $loan = Loan::find($loan_id);
 
-        User::find($student_id)->update($input);
-        return redirect("/dashboard/student-management");
+        $loan->update([
+            'note' => $request->note,
+            'return_date' => $request->return_date,
+            'penalty_per_day' => $request->penalty_per_day,
+        ]);
+
+        return redirect("/dashboard/loan-management/$loan_id")->with('success', 'Data peminjaman diperbarui');
     }
 
     public function search(Request $request)
@@ -141,20 +134,33 @@ class LoanController extends Controller
         if ($keyword) {
             $loans = Loan::whereIn('user_id', $user_id)->with('user', 'loan_items')->paginate(8);
             foreach ($loans as $loan) {
-                $currentTimestamp = time();
-                $createdTimestamp = strtotime($loan['return_date']);
-                $timeDifference = $createdTimestamp - $currentTimestamp;
-
-                $days = floor($timeDifference / 86400);
-                $timeDifference = $days . " hari ";
-                if ($days < 0) {
-                    $timeDifference = "Telat " . $days . " hari ";
-                }
-
-                $loan['selisih'] = $timeDifference;
+                $returnDate = strtotime($loan['return_date']);
+                $loan['denda'] = 'Rp. 0';
 
                 if ($loan['status'] == 'Telah Dikembalikan') {
-                    $loan['selisih'] = '-';
+                    $returnedDate = strtotime($loan['returned_date']);
+                    $diffSecs = $returnedDate - $returnDate;
+                    $days = floor($diffSecs / 86400);
+
+                    if ($days > 0) {
+                        $loan['selisih'] = "Telat " . $days . " hari";
+                        $loan['denda'] = "Rp. " . number_format($loan['penalty_price'], 0, ',', '.');
+                    } else {
+                        $loan['selisih'] = "Tepat Waktu";
+                    }
+                } else {
+                    // Not returned yet
+                    $now = time();
+                    $diffSecs = $returnDate - $now;
+                    $days = floor($diffSecs / 86400);
+
+                    if ($days < 0) {
+                        $lateDays = abs($days);
+                        $loan['selisih'] = "Telat " . $lateDays . " hari";
+                        $loan['denda'] = "Rp. " . number_format($lateDays * count($loan['loan_items']) * $loan['penalty_per_day'], 0, ',', '.');
+                    } else {
+                        $loan['selisih'] = $days . " hari lagi";
+                    }
                 }
             }
         }
@@ -226,20 +232,29 @@ class LoanController extends Controller
     {
         $data = Loan::with('user', 'loan_items')->orderBy('updated_at', 'DESC')->get();
         foreach ($data as $loan) {
-            $currentTimestamp = time();
-            $createdTimestamp = strtotime($loan['return_date']);
-            $timeDifference = $createdTimestamp - $currentTimestamp;
-
-            $days = floor($timeDifference / 86400);
-            $timeDifference = $days . " hari ";
-            if ($days < 0) {
-                $timeDifference = "Telat " . $days . " hari ";
-            }
-
-            $loan['selisih'] = $timeDifference;
+            $returnDate = strtotime($loan['return_date']);
 
             if ($loan['status'] == 'Telah Dikembalikan') {
-                $loan['selisih'] = '-';
+                $returnedDate = strtotime($loan['returned_date']);
+                $diffSecs = $returnedDate - $returnDate;
+                $days = floor($diffSecs / 86400);
+
+                if ($days > 0) {
+                    $loan['selisih'] = "Telat " . $days . " hari";
+                } else {
+                    $loan['selisih'] = "Tepat Waktu";
+                }
+            } else {
+                $now = time();
+                $diffSecs = $returnDate - $now;
+                $days = floor($diffSecs / 86400);
+
+                if ($days < 0) {
+                    $lateDays = abs($days);
+                    $loan['selisih'] = "Telat " . $lateDays . " hari";
+                } else {
+                    $loan['selisih'] = $days . " hari lagi";
+                }
             }
         }
 

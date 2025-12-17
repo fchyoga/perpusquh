@@ -61,6 +61,10 @@ Route::get('/dashboard/profile', [App\Http\Controllers\ProfileController::class,
 Route::get('/dashboard/profile/edit', [App\Http\Controllers\ProfileController::class, 'editProfile'])->name('profile-admin.edit')->middleware(['role:admin|karyawan']);
 Route::put('/dashboard/profile/update/{user_id}', [App\Http\Controllers\ProfileController::class, 'updateProfile'])->name('profile-admin.update')->middleware(['role:admin|karyawan']);
 
+// settings
+Route::get('/dashboard/settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index')->middleware(['role:admin']);
+Route::put('/dashboard/settings/update', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update')->middleware(['role:admin']);
+
 // Member Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/member/dashboard', [App\Http\Controllers\MemberAreaController::class, 'dashboard'])->name('member.dashboard');
